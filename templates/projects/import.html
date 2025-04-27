@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Import Project - Energy Finance{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h1 class="h2">Import Project Data</h1>
+        <p class="text-muted">Upload your Excel or CSV file with project data to quickly create a new project</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card bg-dark border-light mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Upload Project Data</h5>
+                    <form method="post" action="{{ url_for('import_project') }}" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="projectFile" class="form-label">Select a file</label>
+                            <input class="form-control" type="file" id="projectFile" name="projectFile" accept=".csv,.xlsx,.xls">
+                            <div class="form-text text-muted">Supported formats: CSV, Excel (.xlsx, .xls)</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="headerRow" name="headerRow" checked>
+                                <label class="form-check-label" for="headerRow">
+                                    First row contains headers
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload and Import</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card bg-dark border-light">
+                <div class="card-body">
+                    <h5 class="card-title">Template Files</h5>
+                    <p class="card-text">Download our template files to ensure your data is properly formatted:</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('static', filename='templates/solar_project_template.csv') }}" class="btn btn-outline-light">Download CSV Template</a>
+                        <a href="{{ url_for('static', filename='templates/solar_project_template.xlsx') }}" class="btn btn-outline-light">Download Excel Template</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card bg-dark border-light">
+                <div class="card-header">
+                    <h5 class="mb-0">Expected Data Format</h5>
+                </div>
+                <div class="card-body">
+                    <p>Your file should contain the following columns:</p>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Description</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>name</td>
+                                    <td>Project name</td>
+                                    <td>Solar Farm Alpha</td>
+                                </tr>
+                                <tr>
+                                    <td>location</td>
+                                    <td>Project location</td>
+                                    <td>Sunny Valley, CA</td>
+                                </tr>
+                                <tr>
+                                    <td>capacity_mw</td>
+                                    <td>Capacity in MW</td>
+                                    <td>5.5</td>
+                                </tr>
+                                <tr>
+                                    <td>panel_type</td>
+                                    <td>Type of solar panels</td>
+                                    <td>monocrystalline</td>
+                                </tr>
+                                <tr>
+                                    <td>panel_efficiency</td>
+                                    <td>Panel efficiency %</td>
+                                    <td>21.5</td>
+                                </tr>
+                                <tr>
+                                    <td>capex</td>
+                                    <td>Capital expenditure ($)</td>
+                                    <td>5500000</td>
+                                </tr>
+                                <tr>
+                                    <td>opex_per_year</td>
+                                    <td>Annual operating expenses ($)</td>
+                                    <td>75000</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">... and other parameters</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <p class="text-muted">Not ready to import data? You can also <a href="{{ url_for('new_project') }}">create a project manually</a>.</p>
+    </div>
+</div>
+{% endblock %}

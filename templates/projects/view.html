@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('list_projects') }}">Projects</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ project.name }}</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="display-5 fw-bold">{{ project.name }}</h1>
+                <div>
+                    <a href="{{ url_for('analyze_project', project_id=project.id) }}" class="btn btn-primary">
+                        <i class="bi bi-graph-up"></i> Financial Analysis
+                    </a>
+                    <a href="#" class="btn btn-outline-light">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                </div>
+            </div>
+            
+            {% if project.description %}
+            <p class="lead">{{ project.description }}</p>
+            {% endif %}
+            
+            <div class="d-flex gap-3 my-3">
+                <div class="badge bg-secondary p-2">{{ project.project_type|title }}</div>
+                <div class="badge bg-info p-2">{{ project.capacity_mw }} MW</div>
+                <div class="badge bg-primary p-2">{{ project.status|title }}</div>
+                {% if project.location %}
+                <div class="badge bg-success p-2">{{ project.location }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 bg-dark border-light">
+                <div class="card-header">
+                    <h4>Basic Information</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-dark table-striped">
+                        <tbody>
+                            <tr>
+                                <th>Project Type</th>
+                                <td>{{ project.project_type|title }}</td>
+                            </tr>
+                            <tr>
+                                <th>Capacity</th>
+                                <td>{{ project.capacity_mw }} MW</td>
+                            </tr>
+                            <tr>
+                                <th>Location</th>
+                                <td>{{ project.location or 'Not specified' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ project.status|title }}</td>
+                            </tr>
+                            <tr>
+                                <th>Expected Lifetime</th>
+                                <td>{{ project.expected_lifetime_years }} years</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 bg-dark border-light">
+                <div class="card-header">
+                    <h4>Financial Information</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-dark table-striped">
+                        <tbody>
+                            <tr>
+                                <th>Total CAPEX</th>
+                                <td>{% if project.capex %}${{ "{:,.0f}".format(project.capex) }}{% else %}Not specified{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th>CAPEX per MW</th>
+                                <td>{% if project.capex_per_mw %}${{ "{:,.0f}".format(project.capex_per_mw) }}/MW{% else %}Not specified{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th>Annual OPEX</th>
+                                <td>{% if project.opex_per_year %}${{ "{:,.0f}".format(project.opex_per_year) }}{% else %}Not specified{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th>OPEX per MW</th>
+                                <td>{% if project.opex_per_mw %}${{ "{:,.0f}".format(project.opex_per_mw) }}/MW{% else %}Not specified{% endif %}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 bg-dark border-light">
+                <div class="card-header">
+                    <h4>Timeline</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-dark table-striped">
+                        <tbody>
+                            <tr>
+                                <th>Start Date</th>
+                                <td>{{ project.start_date.strftime('%B %d, %Y') if project.start_date else 'Not specified' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Commercial Operation</th>
+                                <td>{{ project.commercial_operation_date.strftime('%B %d, %Y') if project.commercial_operation_date else 'Not specified' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Created</th>
+                                <td>{{ project.created_at.strftime('%B %d, %Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Updated</th>
+                                <td>{{ project.updated_at.strftime('%B %d, %Y') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if project.type == 'solar' %}
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark border-light">
+                <div class="card-header">
+                    <h4>Solar System Specifications</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-dark table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>Panel Type</th>
+                                        <td>{{ project.panel_type|title if project.panel_type else 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Panel Efficiency</th>
+                                        <td>{{ project.panel_efficiency|string + '%' if project.panel_efficiency else 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Number of Panels</th>
+                                        <td>{{ "{:,}".format(project.num_panels) if project.num_panels else 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Panel Capacity</th>
+                                        <td>{{ project.panel_capacity_w|string + 'W' if project.panel_capacity_w else 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tracking System</th>
+                                        <td>{{ project.tracking_type|replace('-', ' ')|title if project.tracking_type else 'Not specified' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-dark table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>Land Area</th>
+                                        <td>{{ project.land_area_acres|string + ' acres' if project.land_area_acres else 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Degradation Rate</th>
+                                        <td>{{ project.degradation_rate|string + '%/year' if project.degradation_rate else 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Performance Ratio</th>
+                                        <td>{{ project.performance_ratio if project.performance_ratio else 'Not specified' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark border-light">
+                <div class="card-header">
+                    <h4>Location Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-dark table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>Latitude</th>
+                                        <td>{{ project.latitude if project.latitude else 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Longitude</th>
+                                        <td>{{ project.longitude if project.longitude else 'Not specified' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-dark table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>Tilt Angle</th>
+                                        <td>{{ project.tilt_angle|string + '°' if project.tilt_angle else 'Not specified' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Azimuth</th>
+                                        <td>{{ project.azimuth|string + '°' if project.azimuth else 'Not specified' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    {% if project.latitude and project.longitude %}
+                    <div class="mt-3 p-3 bg-dark border rounded">
+                        <p class="text-center text-muted">Map view will be implemented in a future version.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="row">
+        <div class="col">
+            <div class="card bg-dark border-light">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Financial Metrics</h4>
+                    <a href="{{ url_for('analyze_project', project_id=project.id) }}" class="btn btn-sm btn-outline-light">Run Analysis</a>
+                </div>
+                <div class="card-body">
+                    {% if project.financial_metrics %}
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 bg-dark border-secondary">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">NPV</h5>
+                                    <p class="display-6">${{ "{:,.0f}".format(project.financial_metrics.npv) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 bg-dark border-secondary">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">IRR</h5>
+                                    <p class="display-6">{{ "{:.1f}".format(project.financial_metrics.irr) }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 bg-dark border-secondary">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Payback Period</h5>
+                                    <p class="display-6">{{ "{:.1f}".format(project.financial_metrics.payback_period) }} years</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 bg-dark border-secondary">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">LCOE</h5>
+                                    <p class="display-6">${{ "{:.2f}".format(project.financial_metrics.lcoe) }}/MWh</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <p class="mb-3">No financial metrics have been calculated for this project yet.</p>
+                        <a href="{{ url_for('analyze_project', project_id=project.id) }}" class="btn btn-primary">Calculate Financial Metrics</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Project{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">Create New Project</h1>
+            <p class="lead">Enter the details of your energy project</p>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('new_project') }}">
+        <div class="card bg-dark border-light mb-4">
+            <div class="card-header">
+                <h4>Basic Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Project Name *</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="name" name="name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="project_type" class="form-label">Project Type *</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="project_type" name="project_type" required>
+                            <option value="solar" selected>Solar</option>
+                            <option value="wind" disabled>Wind (Coming Soon)</option>
+                            <option value="hydro" disabled>Hydro (Coming Soon)</option>
+                            <option value="geothermal" disabled>Geothermal (Coming Soon)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control bg-dark text-light border-secondary" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="location" name="location">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="capacity_mw" class="form-label">Capacity (MW) *</label>
+                        <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="capacity_mw" name="capacity_mw" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="status" class="form-label">Project Status</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="status" name="status">
+                            <option value="planning" selected>Planning</option>
+                            <option value="construction">Construction</option>
+                            <option value="operational">Operational</option>
+                            <option value="decommissioned">Decommissioned</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-dark border-light mb-4" id="solar-fields">
+            <div class="card-header">
+                <h4>Solar-Specific Details</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="panel_type" class="form-label">Panel Type</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="panel_type" name="panel_type">
+                            <option value="monocrystalline">Monocrystalline</option>
+                            <option value="polycrystalline">Polycrystalline</option>
+                            <option value="thin-film">Thin-film</option>
+                            <option value="bifacial">Bifacial</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="panel_efficiency" class="form-label">Panel Efficiency (%)</label>
+                        <input type="number" step="0.1" class="form-control bg-dark text-light border-secondary" id="panel_efficiency" name="panel_efficiency">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="num_panels" class="form-label">Number of Panels</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" id="num_panels" name="num_panels">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="panel_capacity_w" class="form-label">Panel Capacity (W)</label>
+                        <input type="number" step="0.1" class="form-control bg-dark text-light border-secondary" id="panel_capacity_w" name="panel_capacity_w">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="tracking_type" class="form-label">Tracking System</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="tracking_type" name="tracking_type">
+                            <option value="fixed" selected>Fixed Tilt</option>
+                            <option value="single-axis">Single-Axis Tracking</option>
+                            <option value="dual-axis">Dual-Axis Tracking</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="latitude" class="form-label">Latitude</label>
+                        <input type="number" step="0.000001" class="form-control bg-dark text-light border-secondary" id="latitude" name="latitude">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="longitude" class="form-label">Longitude</label>
+                        <input type="number" step="0.000001" class="form-control bg-dark text-light border-secondary" id="longitude" name="longitude">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="tilt_angle" class="form-label">Tilt Angle (°)</label>
+                        <input type="number" step="0.1" class="form-control bg-dark text-light border-secondary" id="tilt_angle" name="tilt_angle">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="azimuth" class="form-label">Azimuth (°)</label>
+                        <input type="number" step="0.1" class="form-control bg-dark text-light border-secondary" id="azimuth" name="azimuth">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="degradation_rate" class="form-label">Annual Degradation Rate (%)</label>
+                        <input type="number" step="0.1" value="0.5" class="form-control bg-dark text-light border-secondary" id="degradation_rate" name="degradation_rate">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="performance_ratio" class="form-label">Performance Ratio</label>
+                        <input type="number" step="0.01" value="0.75" class="form-control bg-dark text-light border-secondary" id="performance_ratio" name="performance_ratio">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="land_area_acres" class="form-label">Land Area (acres)</label>
+                        <input type="number" step="0.1" class="form-control bg-dark text-light border-secondary" id="land_area_acres" name="land_area_acres">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-dark border-light mb-4">
+            <div class="card-header">
+                <h4>Financial Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="capex" class="form-label">Total CAPEX ($)</label>
+                        <input type="number" step="1000" class="form-control bg-dark text-light border-secondary" id="capex" name="capex">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="capex_per_mw" class="form-label">CAPEX per MW ($/MW)</label>
+                        <input type="number" step="1000" class="form-control bg-dark text-light border-secondary" id="capex_per_mw" name="capex_per_mw">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="opex_per_year" class="form-label">Annual OPEX ($)</label>
+                        <input type="number" step="1000" class="form-control bg-dark text-light border-secondary" id="opex_per_year" name="opex_per_year">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="opex_per_mw" class="form-label">OPEX per MW ($/MW)</label>
+                        <input type="number" step="100" class="form-control bg-dark text-light border-secondary" id="opex_per_mw" name="opex_per_mw">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-dark border-light mb-4">
+            <div class="card-header">
+                <h4>Timeline</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control bg-dark text-light border-secondary" id="start_date" name="start_date">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="commercial_operation_date" class="form-label">Commercial Operation Date</label>
+                        <input type="date" class="form-control bg-dark text-light border-secondary" id="commercial_operation_date" name="commercial_operation_date">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="expected_lifetime_years" class="form-label">Expected Lifetime (years)</label>
+                        <input type="number" value="25" class="form-control bg-dark text-light border-secondary" id="expected_lifetime_years" name="expected_lifetime_years">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center my-4">
+            <button type="submit" class="btn btn-primary btn-lg px-5">Create Project</button>
+            <a href="{{ url_for('list_projects') }}" class="btn btn-outline-light btn-lg px-5 ms-2">Cancel</a>
+        </div>
+    </form>
+
+    <div class="text-center mt-5">
+        <p class="text-muted">Prefer to import data from a spreadsheet? <a href="{{ url_for('import_project') }}">Import from Excel/CSV</a>.</p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-calculate related fields
+        const capacityField = document.getElementById('capacity_mw');
+        const numPanelsField = document.getElementById('num_panels');
+        const panelCapacityField = document.getElementById('panel_capacity_w');
+        
+        // Calculate number of panels when capacity changes
+        capacityField.addEventListener('change', function() {
+            if (this.value && panelCapacityField.value) {
+                // Convert MW to W and divide by panel capacity
+                const totalCapacityW = this.value * 1000000;
+                const panelsNeeded = Math.round(totalCapacityW / panelCapacityField.value);
+                numPanelsField.value = panelsNeeded;
+            }
+        });
+        
+        // Auto-calculate CAPEX and OPEX per MW
+        const capexField = document.getElementById('capex');
+        const capexPerMwField = document.getElementById('capex_per_mw');
+        const opexField = document.getElementById('opex_per_year');
+        const opexPerMwField = document.getElementById('opex_per_mw');
+        
+        capexField.addEventListener('change', function() {
+            if (this.value && capacityField.value) {
+                capexPerMwField.value = Math.round(this.value / capacityField.value);
+            }
+        });
+        
+        opexField.addEventListener('change', function() {
+            if (this.value && capacityField.value) {
+                opexPerMwField.value = Math.round(this.value / capacityField.value);
+            }
+        });
+    });
+</script>
+{% endblock %}

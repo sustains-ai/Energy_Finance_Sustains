@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Energy Finance - Financial Analysis for Energy Projects{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold">Energy Finance</h1>
+            <p class="lead mb-4">A powerful tool for financial analysis of energy projects</p>
+            <p class="mb-4">Evaluate the financial viability of solar power and other renewable energy projects with comprehensive metrics like IRR, NPV, and LCOE.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a href="{{ url_for('list_projects') }}" class="btn btn-primary btn-lg px-4 me-md-2">View Projects</a>
+                <a href="{{ url_for('new_project') }}" class="btn btn-outline-light btn-lg px-4 me-md-2">Create New Project</a>
+                <a href="{{ url_for('import_project') }}" class="btn btn-outline-info btn-lg px-4">Import from Excel/CSV</a>
+            </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block">
+            <div class="p-5 text-center">
+                <div class="card bg-dark border-light">
+                    <div class="card-body">
+                        <h3 class="card-title">Key Features</h3>
+                        <ul class="list-group list-group-flush bg-dark">
+                            <li class="list-group-item bg-dark text-light border-light">Solar project financial modeling</li>
+                            <li class="list-group-item bg-dark text-light border-light">Comprehensive cash flow analysis</li>
+                            <li class="list-group-item bg-dark text-light border-light">Key financial metrics calculation</li>
+                            <li class="list-group-item bg-dark text-light border-light">Energy output prediction</li>
+                            <li class="list-group-item bg-dark text-light border-light">Customizable parameters</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 py-5 border-top border-bottom">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 bg-dark border-light">
+            <div class="card-body">
+                <h3 class="card-title">Financial Metrics</h3>
+                <p class="card-text">Calculate key financial indicators including Net Present Value (NPV), Internal Rate of Return (IRR), Payback Period, and Levelized Cost of Energy (LCOE).</p>
+            </div>
+            <div class="card-footer bg-dark">
+                <a href="#" class="btn btn-outline-light btn-sm">Learn More</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 bg-dark border-light">
+            <div class="card-body">
+                <h3 class="card-title">Cash Flow Analysis</h3>
+                <p class="card-text">Generate detailed year-by-year cash flow projections for your projects, with comprehensive breakdown of revenue and expenses.</p>
+            </div>
+            <div class="card-footer bg-dark">
+                <a href="#" class="btn btn-outline-light btn-sm">Learn More</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 bg-dark border-light">
+            <div class="card-body">
+                <h3 class="card-title">Energy Production</h3>
+                <p class="card-text">Estimate energy production for solar projects based on location, system specifications, and historical weather data.</p>
+            </div>
+            <div class="card-footer bg-dark">
+                <a href="#" class="btn btn-outline-light btn-sm">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

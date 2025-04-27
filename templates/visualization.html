@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Visualization - {{ dataset.original_filename }}{% endblock %}
+
+{% block head %}
+<style>
+    #map-container {
+        min-height: 500px;
+    }
+    
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .variable-info {
+        margin-bottom: 15px;
+        padding: 15px;
+        border-left: 4px solid var(--bs-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card bg-dark mb-4">
+    <div class="card-body p-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Visualization</li>
+            </ol>
+        </nav>
+        <h1 class="mb-2"><i class="fas fa-chart-bar me-2"></i>Data Visualization</h1>
+        <p class="lead">Visualize climate data from <strong>{{ dataset.original_filename }}</strong></p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 mb-4 mb-md-0">
+            <div class="card-header">
+                <h5><i class="fas fa-sliders-h me-2"></i>Visualization Controls</h5>
+            </div>
+            <div class="card-body">
+                <div id="loading-metadata" class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading dataset metadata...</p>
+                </div>
+                
+                <div id="metadata-error" class="alert alert-danger" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="metadata-error-message">Error loading metadata</span>
+                </div>
+                
+                <div id="control-panel" style="display: none;">
+                    <div class="mb-3">
+                        <label for="variable-select" class="form-label">Variable</label>
+                        <select class="form-select" id="variable-select">
+                            <option value="" selected disabled>Select a variable</option>
+                        </select>
+                    </div>
+                    
+                    <div id="variable-info" class="variable-info bg-dark" style="display: none;">
+                        <h6 id="variable-name">Variable Information</h6>
+                        <p id="variable-description" class="mb-1 small"></p>
+                        <p id="variable-units" class="mb-0 small"></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="viz-type" class="form-label">Visualization Type</label>
+                        <select class="form-select" id="viz-type">
+                            <option value="map" selected>Geographic Map</option>
+                            <option value="timeseries">Time Series</option>
+                            <option value="histogram">Histogram</option>
+                            <option value="heatmap">Heat Map</option>
+                        </select>
+                    </div>
+                    
+                    <div id="geographic-controls">
+                        <div class="mb-3">
+                            <label class="form-label">Latitude Range</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="lat-min" placeholder="Min" min="-90" max="90" value="-90">
+                                <span class="input-group-text">to</span>
+                                <input type="number" class="form-control" id="lat-max" placeholder="Max" min="-90" max="90" value="90">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Longitude Range</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="lon-min" placeholder="Min" min="-180" max="180" value="-180">
+                                <span class="input-group-text">to</span>
+                                <input type="number" class="form-control" id="lon-max" placeholder="Max" min="-180" max="180" value="180">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="time-controls" style="display: none;">
+                        <div class="mb-3">
+                            <label for="time-select" class="form-label">Time Step</label>
+                            <select class="form-select" id="time-select">
+                                <option value="0" selected>Loading time steps...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="colormap" class="form-label">Color Scheme</label>
+                        <select class="form-select" id="colormap">
+                            <option value="viridis" selected>Viridis</option>
+                            <option value="plasma">Plasma</option>
+                            <option value="inferno">Inferno</option>
+                            <option value="magma">Magma</option>
+                            <option value="cividis">Cividis</option>
+                            <option value="RdBu">Red-Blue</option>
+                            <option value="BrBG">Brown-Blue-Green</option>
+                            <option value="YlOrRd">Yellow-Orange-Red</option>
+                            <option value="YlGnBu">Yellow-Green-Blue</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button id="update-viz" class="btn btn-primary">
+                            <i class="fas fa-sync-alt me-2"></i>Update Visualization
+                        </button>
+                        <button id="export-data" class="btn btn-outline-secondary">
+                            <i class="fas fa-file-export me-2"></i>Export Data
+                        </button>
+                        <a href="{{ url_for('analysis', dataset_id=dataset.id) }}" class="btn btn-outline-info">
+                            <i class="fas fa-microscope me-2"></i>Analyze this Dataset
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-chart-area me-2"></i>Visualization</h5>
+                <div class="btn-group">
+                    <button id="download-image" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-download me-1"></i>Download
+                    </button>
+                    <button id="fullscreen-viz" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-expand me-1"></i>Fullscreen
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="loading-viz" class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Generating visualization...</p>
+                </div>
+                
+                <div id="viz-error" class="alert alert-danger" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="viz-error-message">Error generating visualization</span>
+                </div>
+                
+                <div id="no-data-selected" class="text-center p-5">
+                    <i class="fas fa-chart-bar fa-3x mb-3 text-muted"></i>
+                    <h5>No Data Selected</h5>
+                    <p class="text-muted">Select a variable and click "Update Visualization" to begin</p>
+                </div>
+                
+                <div id="map-container" style="display: none;"></div>
+                <div id="chart-container" style="display: none;"></div>
+            </div>
+            <div class="card-footer" id="viz-stats" style="display: none;">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <small class="d-block text-muted">Min</small>
+                        <span id="stat-min">-</span>
+                    </div>
+                    <div class="col-sm-3">
+                        <small class="d-block text-muted">Max</small>
+                        <span id="stat-max">-</span>
+                    </div>
+                    <div class="col-sm-3">
+                        <small class="d-block text-muted">Mean</small>
+                        <span id="stat-mean">-</span>
+                    </div>
+                    <div class="col-sm-3">
+                        <small class="d-block text-muted">Std</small>
+                        <span id="stat-std">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-info-circle me-2"></i>Dataset Information</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>File Details</h6>
+                <ul class="list-unstyled">
+                    <li><strong>Filename:</strong> {{ dataset.original_filename }}</li>
+                    <li><strong>Type:</strong> <span class="badge bg-secondary">{{ dataset.file_type }}</span></li>
+                    <li><strong>Size:</strong> {{ (dataset.file_size / 1024)|round|int }} KB</li>
+                    <li><strong>Uploaded:</strong> {{ dataset.created_at.strftime('%Y-%m-%d %H:%M') }}</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>Description</h6>
+                <p>{{ dataset.description if dataset.description else 'No description provided.' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Exporting Data -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="export-form">
+                    <div class="mb-3">
+                        <label for="export-format" class="form-label">Export Format</label>
+                        <select class="form-select" id="export-format">
+                            <option value="csv" selected>CSV</option>
+                            <option value="json">JSON</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="export-data-type" class="form-label">Data to Export</label>
+                        <select class="form-select" id="export-data-type">
+                            <option value="current" selected>Current View</option>
+                            <option value="full">Full Dataset</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="do-export">Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/visualization.js') }}"></script>
+<script>
+    // Initialize visualization with dataset ID
+    document.addEventListener('DOMContentLoaded', function() {
+        initVisualization({{ dataset.id }});
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Data{% endblock %}
+
+{% block content %}
+<div class="card bg-dark mb-4">
+    <div class="card-body p-4">
+        <h1 class="mb-4"><i class="fas fa-upload me-2"></i>Upload Climate Data</h1>
+        <p class="lead">Upload your climate data files for analysis and visualization.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-file-upload me-2"></i>Upload Form</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="file" class="form-label">Select File</label>
+                        <input type="file" class="form-control" id="file" name="file" required>
+                        <div class="form-text">Supported formats: NetCDF (.nc, .netcdf), CSV, TXT, GRIB, HDF5</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="description" class="form-label">Description (optional)</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter a description for this dataset..."></textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-cloud-upload-alt me-2"></i>Upload Dataset
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle me-2"></i>File Information</h5>
+            </div>
+            <div class="card-body">
+                <h6>Supported Formats:</h6>
+                <ul>
+                    <li><strong>NetCDF (.nc, .netcdf)</strong> - Recommended format for climate data</li>
+                    <li><strong>CSV (.csv)</strong> - Tabular data with headers</li>
+                    <li><strong>Text (.txt)</strong> - Structured text files</li>
+                    <li><strong>GRIB (.grib, .grb)</strong> - Gridded binary data</li>
+                    <li><strong>HDF5 (.hdf5, .h5)</strong> - Hierarchical Data Format</li>
+                </ul>
+                
+                <h6>File Size Limit:</h6>
+                <p>Maximum file size: <strong>50 MB</strong></p>
+                
+                <h6>Variable Requirements:</h6>
+                <p>For climate analysis, your data should include:</p>
+                <ul>
+                    <li>Latitude and longitude coordinates</li>
+                    <li>Time dimension (for temporal analyses)</li>
+                    <li>Climate variables (e.g., temperature, precipitation)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-question-circle me-2"></i>Need Sample Data?</h5>
+            </div>
+            <div class="card-body">
+                <p>You can find sample climate datasets at:</p>
+                <ul>
+                    <li><a href="https://psl.noaa.gov/data/gridded/" target="_blank">NOAA PSL Gridded Data</a></li>
+                    <li><a href="https://cds.climate.copernicus.eu/" target="_blank">Copernicus Climate Data Store</a></li>
+                    <li><a href="https://www.ncei.noaa.gov/products/climate-data-records" target="_blank">NOAA Climate Data Records</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

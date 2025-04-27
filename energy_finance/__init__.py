@@ -1,0 +1,3 @@
+"""
+Energy Finance package initialization
+"""
